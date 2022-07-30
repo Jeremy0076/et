@@ -1,0 +1,54 @@
+syntax = "proto3";
+package models;
+option go_package=".";  // 意思是输出到当前目录
+
+message ServiceGetUserReq {
+  optional string username = 1;
+  optional string requestId = 2;
+}
+
+message ServiceGetUserResp {
+  optional string username = 1;
+  optional string nickname = 2;
+  optional string picfile = 3;
+}
+
+message ServiceLoginReq {
+  optional string username = 1;
+  optional string pwd = 2;
+  optional string requestId = 3;
+}
+
+message ServiceLoginResp {
+  optional string token = 1;
+}
+
+message ServiceSignOutReq {
+  optional string token = 1;
+  optional string requestId = 2;
+}
+
+message ServiceSignOutResp {}
+
+message ServiceEditReq {
+  optional string username = 1;
+  optional string nickname = 2;
+  optional string picpath = 3;
+  optional string requestId = 4;
+}
+
+message ServiceEditResp {
+  optional string username = 1;
+  optional string nickname = 2;
+  optional string picpath = 3;
+}
+
+message ServiceUserAuthReq {
+  optional string username = 1;
+  optional string token = 2;
+  optional string requestId = 3;
+}
+
+message ServiceUserAuthResp {
+  optional bool islogin = 1;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<div class="container">
+    <h2>User Login</h2>
+    <form id="login_form", accept-charset="UTF-8", action="login", method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <br/>
+        <button type="button" class="btn btn-primary", id="login" >Login</button>
+    </form>
+</div>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+
+// makeSign 生成签名
+function makeSign(token, ...args) {
+    let salt = "seatalk"
+    let len = args.length
+    let str = ""
+    str += token
+    str += "_"
+    for(let i = 0; i < len; i++) {
+        str += args[i]
+        str += "_"
+    }
+    str += salt
+    let returnStr = CryptoJS.SHA256(str).toString()
+    console.log(returnStr)
+    return returnStr
+}
+
+    $("#login").click(function (){
+        var timestamp = Date.parse(new Date());
+        var username = document.getElementById("username")
+        var pwdget = document.getElementById("password")
+        if (username.value === "") {
+            alert("请输入用户名")
+            return
+        } else if (pwdget.value === "") {
+            alert("请输入密码")
+            return
+        }
+
+        var pwd = pwdget.value
+        // 加盐hamc sha256防止中间人获取明文密码
+        pwd += "seatalk"
+        var password = CryptoJS.SHA256(pwd).toString()
+        console.log(password)
+        let data = {
+            "username": username.value,
+            "password": password,
+        }
+        //data["password"] = CryptoJS.SHA256(password.value).toString()
+        
+        var requestID = Math.random().toString(36).slice(-8)
+        token = localStorage.getItem("token")
+        
+        if (token != null && token != "") {
+            window.location.herf = "/index.html"
+        }
+        if (token == null) {
+            token = ""
+        }
+        sign = makeSign(token, username.value, password)
+
+        $.ajax({
+            headers:{
+                "Authorization":""
+            },
+            type: "POST",
+            dataType: "json",
+            url: "http://localhost:8080/api/login"+"?sign="+sign+"&timestamp="+timestamp+"&requestID="+requestID,
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=utf-8',
+            success: function (rsp) {
+                if (rsp.code === 0) {
+                    var user = rsp.data
+                    if (user.token != "") {
+                        localStorage.username = $("#username").val();
+                        localStorage.token = user.token;
+                        window.location.href = "/index.html";
+                    }else{
+                        alert("Please try again!")
+                    }
+                   
+                } else {
+                  alert(rsp.msg)
+                }
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    })
+</script>
+</body>
+</html>

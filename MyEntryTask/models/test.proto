@@ -1,0 +1,17 @@
+syntax = "proto3";
+package models;
+option go_package=".";  // 意思是输出到当前目录
+
+message TestTransport_User {
+  optional string username = 1;
+  optional string password = 2;
+}
+
+message TestRpcCallReq {
+  optional string username = 1;
+  optional string password = 2;
+}
+
+message TestRpcCallResp {
+  optional string result = 1;
+}

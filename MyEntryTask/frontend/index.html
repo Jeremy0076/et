@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+
+<div class="container">
+    <h2>User Profile</h2>
+
+    <div class="form-group">
+        <label for="upload">Profile Picture:</label>
+        <img src="" alt="" id="picture" width="150" height="150">
+    </div>
+    <br/>
+    <div class="form-group">
+        <input accept="image/*" class="form-control" id="upload" name="picture" type="file">
+    </div>
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="username" name="username" value="" readonly>
+    </div>
+    <div class="form-group">
+        <label for="nickname">Nickname:</label>
+        <input type="text" class="form-control" id="nickname" name="nickname" value="">
+    </div>
+    <br/>
+    <button type="button" class="btn btn-primary", id="update">Update</button>
+    <button type="button" id="logout" class="btn btn-secondary">Logout</button>
+
+</div>
+
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<script>
+// makeSign 生成签名
+function makeSign(token, ...args) {
+    let salt = "seatalk"
+    let len = args.length
+    let str = ""
+    str += token
+    str += "_"
+    for(let i = 0; i < len; i++) {
+        str += args[i]
+        str += "_"
+    }
+    str += salt
+    let returnStr = CryptoJS.SHA256(str).toString()
+    return returnStr
+}
+
+$(document).ready(function () {
+        var token = localStorage.token;
+        var userName = localStorage.username;
+        
+        if(!userName || !token){
+            console.log("user = %s", userName)
+            window.location="/login.html";
+        }else{
+            var requestID = Math.random().toString(36).slice(-8)
+            var timestamp = Date.parse(new Date());
+            var sign = makeSign(token, userName)
+            $.ajax({
+                headers:{
+                    "Authorization":localStorage.getItem("token")
+                },
+                type: "GET",
+                url: "http://localhost:8080/api/profile" + "?username=" + userName + "&sign=" + sign + "&timestamp=" + timestamp + "&requestID=" + requestID,
+                success: function (rsp) {
+                    if (rsp.code === 0) {
+                        var user = rsp.data
+                        localStorage.username = user.username;
+                        localStorage.nickname = user.nickname;
+                        localStorage.picfile = user.picfile;
+                        $('#nickname').val(user.nickname);
+                        $('#username').val(user.username);
+                        $('#picture').attr("src","/img/" + user.picfile);
+                    } else if (rsp.code === 2102){
+                        // token expired, redirect
+                        localStorage.clear();
+                        window.location="/login.html";
+                    } else {
+                        alert(rsp.msg)
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        $('#update').click(function () {
+            var username = $("#username").val()
+            var nickname = $("#nickname").val()
+            var picture = $("#upload")[0].files[0]
+            var requestID = Math.random().toString(36).slice(-8)
+            var sign = makeSign(token, userName, nickname)
+            var timestamp = Date.parse(new Date());
+            var formData = new FormData();
+            formData.append("nickname", nickname);
+            formData.append("PicFile", picture);
+            formData.append("username", username);
+            $.ajax({
+                headers:{
+                    "Authorization":localStorage.getItem("token")
+                },
+                url: "http://localhost:8080/api/updateProfile" + "?timestamp=" + timestamp + "&sign=" + sign + "&requestID=" + requestID,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (rsp) {
+                    console.log(rsp)
+                    if (rsp.code != 0){
+                        alert(rsp.msg)
+                    }else{
+                        alert("update success!")
+                        var user = rsp.data
+                        localStorage.username = user.username;
+                        localStorage.nickname = user.nickname;
+                        localStorage.picfile = user.picfile;
+                        window.location = "/index.html";
+                    }
+                },
+                error: function (rsp) {
+                    alert(rsp.msg)
+                }
+            });
+        });
+
+        $('#logout').click(function () {
+            var timestamp = Date.parse(new Date());
+            var requestID = Math.random().toString(36).slice(-8)
+            var sign = makeSign(token, userName);
+            let data = {
+                "username": localStorage.username,
+            }
+            if(token == null){
+                window.location="/login.html";
+            }else{
+                $.ajax({
+                    headers:{
+                        "Authorization":token
+                    },
+                    type: "POST",
+                    url: "http://localhost:8080/api/signout" + "?timestamp=" + timestamp + "&sign=" + sign + "&requestID=" + requestID,
+                    data: JSON.stringify(data),
+                    success: function (rsp) {
+                        if (rsp.code === 0) {
+                            alert("logout successfully!")
+                            localStorage.clear();
+                            window.location="/login.html";
+                        } else {
+                            alert(rsp.msg)
+                        }
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+            // localStorage.clear();
+            // window.location="/login.html";
+        })
+})
+</script>
+</body>
+</html>

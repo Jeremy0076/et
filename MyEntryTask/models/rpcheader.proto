@@ -1,0 +1,24 @@
+syntax = "proto3";
+package models;
+option go_package=".";  // 意思是输出到当前目录
+
+
+message CommHeader {
+  optional uint64 callSeq = 1;
+  optional string method = 2;
+}
+
+message ReqHeader {
+
+}
+
+message RespHeader {
+  optional uint32 code = 1;
+  optional string msg = 2;
+}
+
+message Header {
+  optional CommHeader comm = 1;
+  optional ReqHeader reqHeader = 2;
+  optional RespHeader respHeader = 3;
+}

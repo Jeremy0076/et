@@ -1,0 +1,11 @@
+[I]2022/07/30 17:55:24 server.go:46: rpc svr run at :[127.0.0.1:8889]
+[I]2022/07/30 17:55:27 main.go:35: http server start at 127.0.0.1:8081
+[I]2022/07/30 17:55:53 userservice.go:29: requestId u1cu0y3i dao.GetUsernameByToken :[562.333µs]
+
+[I]2022/07/30 17:56:46 userservice.go:29: requestId 111 dao.GetUsernameByToken :[209.958µs]
+[W]2022/07/30 17:56:46 client.go:103: rpc call code err: [2102]
+[W]2022/07/30 17:56:46 usercontroller.go:36: requestId :[111] user auth code incorrect, code:[2102]
+[I]2022/07/30 17:56:46 usercontroller.go:106: API:[/api/login] requestId:[111] usertime :[1.486542ms] username :[test01] login sussess
+[I]2022/07/30 17:57:18 userservice.go:29: requestId  dao.GetUsernameByToken :[1.12325ms]
+[I]2022/07/30 17:57:18 userservice.go:54: requestId  dao.AddToken :[1.445458ms]
+[I]2022/07/30 17:57:18 usercontroller.go:333: API:[/api/updateProfile] requestId :[] username :[test01] update profile sussess

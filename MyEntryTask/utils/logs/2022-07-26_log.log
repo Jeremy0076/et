@@ -1,0 +1,13 @@
+[I]2022/07/26 20:47:53 server.go:46: rpc svr run at :[127.0.0.1:8889]
+[I]2022/07/26 20:47:57 main.go:35: http server start at 127.0.0.1:8081
+[I]2022/07/26 20:48:47 usercontroller.go:225: API:[/api/profile] requestId :[] username :[test9] get profile sussess
+[I]2022/07/26 20:48:49 usercontroller.go:166: API:[/api/signout] requestId:[] username :[test9] signout sussess
+[I]2022/07/26 20:49:02 usercontroller.go:104: API:[/api/login] requestId:[x39n2a0i] username :[test9] login sussess
+[I]2022/07/26 20:49:02 usercontroller.go:225: API:[/api/profile] requestId :[gfmi6uhe] username :[test9] get profile sussess
+[I]2022/07/26 20:49:11 usercontroller.go:331: API:[/api/updateProfile] requestId :[8rmu6ogr] username :[test9] update profile sussess
+[I]2022/07/26 20:49:12 usercontroller.go:225: API:[/api/profile] requestId :[r1m00pwi] username :[test9] get profile sussess
+[I]2022/07/26 20:49:22 usercontroller.go:331: API:[/api/updateProfile] requestId :[z09f5o76] username :[test9] update profile sussess
+[I]2022/07/26 20:49:22 usercontroller.go:225: API:[/api/profile] requestId :[x6or6c33] username :[test9] get profile sussess
+[I]2022/07/26 20:49:31 usercontroller.go:166: API:[/api/signout] requestId:[rtpczrwo] username :[test9] signout sussess
+
+
